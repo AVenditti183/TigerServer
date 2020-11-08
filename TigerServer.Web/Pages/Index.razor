@@ -1,0 +1,73 @@
+@using System.Threading
+@using TigerServer.Core.Infrastructor
+@using TigerServer.Core.Infrastructor.Messages
+@using TigerServer.Core.Infrastructor.Messages.Orchestrator.Incoming
+@using TigerServer.Core.Infrastructor.DashBoards
+
+@inject IoT system
+@inject DashBoard dashBoard
+
+@page "/"
+    @if (dashBoard != null && dashBoard.Gateways != null)
+    {
+    @foreach (var gateway in dashBoard.Gateways)
+    {
+<ul>
+    @gateway.Name - @gateway.IsActive (@gateway.Ip)
+    <button @onclick="() => AddDevice(gateway.Id)">Add Device</button>
+    @if (gateway != null && gateway.Devices != null)
+    {
+        foreach (var device in gateway.Devices)
+        {
+<li>@device.Name - @device.IsActive - @device.Value</li>
+                    <button @onclick="() => ChageStateDevice(device.Id, gateway.Id, !device.IsActive) ">Change State</button>
+                                        <button @onclick="() => DeviceSetValue(device.Id, gateway.Id)">set value</button>}
+    }
+</ul>}
+    }
+
+    <button @onclick="ConnectAll">Connect all</button>
+    <button @onclick="DisconnectAll">Disconnect all</button>
+
+
+    @code { protected override void OnAfterRender(bool firstRender)
+        {
+            base.OnAfterRender(firstRender);
+            if (firstRender)
+                dashBoard.Change += Change;
+        }
+
+        private void Change(object sender, EventArgs e)
+        {
+            InvokeAsync(() => StateHasChanged());
+        }
+
+        private void ConnectAll()
+        {
+            system.SendMsg(new GatewayStarted("1", "ip"));
+        }
+
+        private void DisconnectAll()
+        {
+            system.SendMsg(new GatewayDisconnected("1"));
+        }
+
+        private void ChageStateDevice(string id, string gatewayId, bool state)
+        {
+            if (!state)
+                system.SendMsg(new DeviceDisconnected(new DeviceInfo(id, gatewayId)));
+            else
+                system.SendMsg(new DeviceStarted(new DeviceInfo(id, gatewayId), "ip"));
+        }
+
+        private void AddDevice(string gatewayid)
+        {
+            var id = dashBoard.Gateways.Where(o => o.Id == gatewayid).First().Devices.Select(s => System.Convert.ToInt32(s.Id)).Max() + 1;
+
+            system.AddDevice(dashBoard.Gateways.FirstOrDefault(o => o.Id == gatewayid), new DeviceDashBoard(id.ToString()));
+        }
+
+        private void DeviceSetValue(string id, string gatewayId)
+        {
+            system.SendMsg(new DeviceSet(new DeviceInfo(id, gatewayId), "6"));
+        } }

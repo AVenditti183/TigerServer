@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="DashBoards\" />
+    <Folder Include="Messages\" />
+    <Folder Include="MQTT\" />
+    <Folder Include="Physical\" />
+    <Folder Include="Repository\" />
+    <Folder Include="Scenari\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Akka" Version="1.4.11" />
+    <PackageReference Include="Akka.DI.Core" Version="1.4.11" />
+    <PackageReference Include="MQTTnet" Version="3.0.13" />
+  </ItemGroup>
+</Project>
