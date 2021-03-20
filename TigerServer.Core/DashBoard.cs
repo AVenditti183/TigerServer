@@ -22,33 +22,4 @@ namespace TigerServer.Core.Infrastructor
             Change?.Invoke(this, new EventArgs());
         }
     }
-
-    public class IoTWorld
-    {
-        private List<IDevice> devices;
-        public ReadOnlyCollection<IDevice> Devices => devices.AsReadOnly();
-
-        public IoTWorld()
-        { 
-            
-        }
-
-        public void add()
-        {
-           
-        }
-    }
-
-    public interface IDevice
-    {
-        public string Id { get; init; }
-        public IDeviceTransport Transport { get; init; }
-
-    }
-
-    public interface IDeviceTransport
-    {
-
-    }
-
 }

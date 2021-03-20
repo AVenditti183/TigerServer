@@ -11,6 +11,7 @@ using System.Linq;
 using MQTTnet.Server.Status;
 using TigerServer.Core.Infrastructor.Messages.Orchestrator;
 using TigerServer.Core.Infrastructor.Messages.Orchestrator.Incoming;
+using TigerServer.Core.Infrastructor.Messages.Physical.Outcoming;
 
 namespace TigerServer.Core.Infrastructor.MQTT
 {
@@ -56,6 +57,16 @@ namespace TigerServer.Core.Infrastructor.MQTT
                    ReceiveMsg?.Invoke(this, msgContext);
 
            });
+        }
+
+        public async Task Send(MsgMQTTSend msg)
+        {
+            var message = new MqttApplicationMessageBuilder()
+                        .WithTopic(msg.topic)
+                        .WithPayload(msg.payload)
+                        .Build();
+
+            await _server.PublishAsync(message, CancellationToken.None);
         }
 
         private object ToMessage(string topic,string value)
